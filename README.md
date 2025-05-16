@@ -22145,24 +22145,6 @@ function showProviderBookingConfirmation(customerName, bookingTotal) {
   }
 }
 
-function showProviderBookingConfirmation(customerName, bookingTotal) {
-  const confirmModal = document.getElementById('providerBookingConfirm');
-  const messageEl = document.getElementById('providerBookingMessage');
-  
-  if (confirmModal && messageEl) {
-    messageEl.textContent = `${customerName}, your service booking for ₹${bookingTotal} is confirmed!`;
-    confirmModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    // Reset timer display
-    const timerElement = document.getElementById('providerConfirmTimer');
-    if (timerElement) timerElement.textContent = '5';
-    
-    // Start countdown
-    startConfirmationTimer();
-  }
-}
-
 function startConfirmationTimer() {
   const timerElement = document.getElementById('providerConfirmTimer');
   if (!timerElement) return;
@@ -23603,7 +23585,7 @@ function addProviderPageStyles() {
   from { width: 100%; }
   to { width: 0%; }
 }
-  
+
 /* Toast notification */
 .toast {
   position: fixed;
