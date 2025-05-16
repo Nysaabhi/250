@@ -21717,8 +21717,6 @@ function openProviderPage(providerName) {
     <!-- Provider Booking Confirmation Modal - Unique to Providers -->
 <div class="provider-booking-confirm" id="providerBookingConfirm">
   <div class="provider-confirm-box">
-    <div class="provider-confirm-progress"></div>
-    <div class="provider-confirm-timer" id="providerConfirmTimer">5</div>
     <div class="provider-confirm-icon">
       <i class="fas fa-calendar-check"></i>
     </div>
@@ -22135,39 +22133,54 @@ function showProviderBookingConfirmation(customerName, bookingTotal) {
   
   if (confirmModal && messageEl) {
     messageEl.textContent = `${customerName}, your service booking for ₹${bookingTotal} is confirmed!`;
-    confirmModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
     
-    // Automatically close after 5 seconds
+    // Show after 10 seconds
     setTimeout(() => {
-      closeProviderBooking();
-    }, 5000);
+      confirmModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Auto-close after 5 seconds
+      setTimeout(() => {
+        if (confirmModal.classList.contains('active')) {
+          confirmModal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }, 5000); // 5 seconds
+      
+    }, 10000); // 10 seconds
   }
 }
 
-function startConfirmationTimer() {
-  const timerElement = document.getElementById('providerConfirmTimer');
-  if (!timerElement) return;
+// And update the closeProviderBooking function to clear any pending timeouts:
+let bookingConfirmTimeout;
+let bookingCloseTimeout;
+
+function showProviderBookingConfirmation(customerName, bookingTotal) {
+  const confirmModal = document.getElementById('providerBookingConfirm');
+  const messageEl = document.getElementById('providerBookingMessage');
   
-  let seconds = 5;
-  const timerInterval = setInterval(() => {
-    seconds--;
-    timerElement.textContent = seconds;
+  // Clear any existing timeouts
+  clearTimeout(bookingConfirmTimeout);
+  clearTimeout(bookingCloseTimeout);
+  
+  if (confirmModal && messageEl) {
+    messageEl.textContent = `${customerName}, your service booking for ₹${bookingTotal} is confirmed!`;
     
-    if (seconds <= 0) {
-      clearInterval(timerInterval);
-      closeProviderBooking();
-    }
-  }, 1000);
-  
-  // Clear interval if modal is manually closed
-  document.querySelector('.provider-close-confirm')?.addEventListener('click', () => {
-    clearInterval(timerInterval);
-  });
-  
-  document.querySelector('.provider-view-details')?.addEventListener('click', () => {
-    clearInterval(timerInterval);
-  });
+    // Show after 10 seconds
+    bookingConfirmTimeout = setTimeout(() => {
+      confirmModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Auto-close after 5 seconds
+      bookingCloseTimeout = setTimeout(() => {
+        if (confirmModal.classList.contains('active')) {
+          confirmModal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }, 5000);
+      
+    }, 10000);
+  }
 }
 
 function closeProviderBooking() {
@@ -22175,6 +22188,9 @@ function closeProviderBooking() {
   if (confirmModal) {
     confirmModal.classList.remove('active');
     document.body.style.overflow = '';
+    // Clear any pending timeouts when manually closed
+    clearTimeout(bookingConfirmTimeout);
+    clearTimeout(bookingCloseTimeout);
   }
 }
 
@@ -23554,36 +23570,6 @@ function addProviderPageStyles() {
 
 .provider-close-confirm:hover {
   background: #444;
-}
-
-.provider-confirm-timer {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: #ffd700;
-}
-
-.provider-confirm-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  background: #ffd700;
-  border-radius: 0 0 0 4px;
-  animation: progress 5s linear forwards;
-}
-
-@keyframes progress {
-  from { width: 100%; }
-  to { width: 0%; }
 }
 
 /* Toast notification */
